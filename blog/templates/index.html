@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+
+{% if title %}
+    <section class="s-pageheader">
+        <div class="row current-cat">
+            <div class="column">
+                <h1 class="h2">{{title}}</h1>
+            </div>
+        </div>
+    </section>
+{% endif %}
+
+<section class="s-bricks {% if title %}with-top-sep{% endif %}">
+    <div class="masonry">
+        <div class="bricks-wrapper h-group">
+            <div class="grid-sizer"></div>
+            {% if sliders %}
+                <div class="brick entry featured-grid animate-this">
+                    <div class="entry__content">
+
+                        <div class="featured-post-slider">
+                            {% for slider in sliders %}
+                                <div class="featured-post-slide">
+                                    <div class="f-slide">
+                                        
+                                        <div class="f-slide__background" style="background-image:url('{{slider.post.thumbnail.url}}');"></div>
+                                        <div class="f-slide__overlay"></div>
+
+                                        <div class="f-slide__content">
+                                            <ul class="f-slide__meta">
+                                                <li>{{slider.post.created_at}}</li> 
+                                            </ul>
+                                            <h1 class="f-slide__title"><a href="/post/{{slider.post.slug}}/" title="">{{slider.post.title}}</a></h1> 
+                                            <ul class="f-slide__meta">
+                                                {% for category in slider.post.categories.all %}
+                                                    <li><a href="/category/{{category.slug}}/">{{category.title}}</a></li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    </div> <!-- f-slide -->
+                                </div> <!-- featured-post-slide -->
+                            {% endfor %}
+                        </div> <!-- end feature post slider -->
+                        
+                        <div class="featured-post-nav">
+                            <button class="featured-post-nav__prev">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12.707 17.293L8.414 13H18v-2H8.414l4.293-4.293-1.414-1.414L4.586 12l6.707 6.707z"></path></svg>
+                            </button>
+                            <button class="featured-post-nav__next">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M11.293 17.293l1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z"></path></svg>
+                            </button>
+                        </div> <!-- featured-post-nav -->
+
+                    </div> <!-- end entry content -->
+                </div> <!-- end entry, featured grid -->
+            {% endif %}
+            {% for article in object_list %}
+                {% if article.is_active %}
+                    <article class="brick entry format-standard animate-this">
+                        {% if article.thumbnail %}
+                            <div class="entry__thumb">
+                                <a href="/post/{{article.slug}}/" class="thumb-link">
+                                    <img src="{{ article.thumbnail.url }}" alt="">
+                                </a>
+                            </div> <!-- end entry__thumb -->
+                        {% endif %}
+                        <div class="entry__text">
+                            <div class="entry__header">
+                                <div class="entry__meta">
+                                    <span class="entry__cat-links">
+                                        {% for category in article.categories.all %}
+                                            <a href="/category/{{category.slug}}/">{{category.title}}</a>
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                                <h1 class="entry__title"><a href="/post/{{article.slug}}/">{{article.title}}</a></h1>
+                            </div>
+                            <div class="entry__excerpt">
+                                <p>
+                                    {{article.description}}
+                                </p>
+                            </div>
+                        </div> <!-- end entry__text -->
+                    </article> <!-- end entry -->
+                {% endif %}
+            {% endfor %}
+            
+        </div> <!-- end brick-wrapper -->
+    </div> <!-- end masonry -->
+
+
+    {% if is_paginated %}
+    <div class="row">
+        <div class="column large-12">
+            <nav class="pgn">
+                <ul>
+                    {% if page_obj.has_previous %}
+                    <li>
+                        <a class="pgn__prev" href="?page={{ page_obj.previous_page_number }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path
+                                    d="M12.707 17.293L8.414 13H18v-2H8.414l4.293-4.293-1.414-1.414L4.586 12l6.707 6.707z">
+                                </path>
+                            </svg>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% if 1 <= page_obj.number|add:'-3' %}
+                        <li>
+                            <a href="?page=1" class="
+                                pgn__num
+                                {% if page_obj.number == page_num %}
+                                    current
+                                {% endif %}
+                                ">1</a>
+                        </li>
+                        {% if 1 != page_obj.number|add:'-3' %}
+                            <li><span class="pgn__num dots">…</span></li>
+                        {% endif %}
+                    {% endif %}
+
+                    {% for page_num in page_obj.paginator.page_range %}
+                        {% if page_num > page_obj.number|add:'-3' and page_num < page_obj.number|add:'3' %}
+                        <li>
+                            <a href="?page={{ page_num }}" class="
+                                pgn__num
+                                {% if page_obj.number == page_num %}
+                                    current
+                                {% endif %}
+                                ">{{ page_num }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.paginator.num_pages >= page_obj.number|add:'3' %}
+                        {% if page_obj.paginator.num_pages != page_obj.number|add:'3' %}
+                            <li><span class="pgn__num dots">…</span></li>
+                        {% endif %}
+                        
+                        <li>
+                            <a href="?page={{ page_obj.paginator.num_pages }}" class="
+                                pgn__num
+                                {% if page_obj.number == page_num %}
+                                    current
+                                {% endif %}
+                                ">{{ page_obj.paginator.num_pages }}</a>
+                        </li>
+                    {% endif %}
+
+                    {% if page_obj.has_next %}
+                        <li>
+                            <a class="pgn__next" href="?page={{page_obj.next_page_number}}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                    <path
+                                        d="M11.293 17.293l1.414 1.414L19.414 12l-6.707-6.707-1.414 1.414L15.586 11H6v2h9.586z">
+                                    </path>
+                                </svg>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav> <!-- end pgn -->
+        </div> <!-- end column -->
+    </div> <!-- end row -->
+    {% endif %}
+</section> <!-- end s-bricks -->
+
+{% endblock %}
