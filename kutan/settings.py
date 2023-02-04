@@ -29,7 +29,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = [os.environ['DOMAIN'], '127.0.0.1']
 
-CSRF_TRUSTED_ORIGINS = [os.environ['DOMAIN'], 'https://127.0.0.1']
+CSRF_TRUSTED_ORIGINS = [f"http://{os.environ['DOMAIN']}", 'https://127.0.0.1']
 
 # RECAPTCHA Key
 RECAPTCHA_PUBLIC_KEY = os.environ['RECAPTCHA_PUBLIC_KEY']
